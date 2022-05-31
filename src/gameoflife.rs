@@ -1,5 +1,5 @@
 use std::{collections::HashSet};
-use rand::Rng;
+use crate::random::random_range;
 
 pub type Position = (usize, usize);
 
@@ -17,10 +17,9 @@ impl GameOfLife {
             height: height,
             alive_fields: {
                 let mut alive_fields: HashSet<Position> = HashSet::new();
-                let mut rng = rand::thread_rng();
                 for y in 0..height {
                     for x in 0..width {
-                        if rng.gen_range(0..=100) <= percentage {
+                        if random_range(0, 100) <= percentage {
                             alive_fields.insert((x, y));
                         }
                     }
