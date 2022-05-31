@@ -1,4 +1,4 @@
-use std::{collections::HashSet};
+use std::{collections::HashSet, fmt::{Display, Write}};
 use crate::random::random_range;
 
 pub type Position = (usize, usize);
@@ -8,6 +8,26 @@ pub struct GameOfLife {
     pub width: usize,
     pub height: usize,
     pub alive_fields: HashSet<Position>
+}
+
+impl Display for GameOfLife {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    for y in 0..self.height {
+      for x in 0..self.width {
+        let pos = (x, y);
+
+        if self.alive_fields.contains(&pos) {
+            f.write_str("🟪 ")?;
+          } else {
+            f.write_str("⬜ ")?;
+          }
+      }
+
+      f.write_char('\n')?;
+    }
+
+    Ok(())
+  }
 }
 
 impl GameOfLife {
@@ -68,6 +88,14 @@ impl GameOfLife {
             }
         }
         self.alive_fields = new_alive_fields;
+    }
+
+    pub fn toggle_state_of_cell(&mut self, pos: Position) {
+        if self.alive_fields.contains(&pos) {
+            self.alive_fields.remove(&pos);
+        } else {
+            self.alive_fields.insert(pos);
+        }
     }
 }
 

@@ -8,29 +8,86 @@
     <style>
       html {
         font-size: 200%;
-        text-align: center;
-      }
-
-      #root {
-        border: 1px solid grey;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
       .field {
-        width: 1rem;
-        height: 1rem;
-        line-height: 1rem;
-        text-indent: -0.2rem;
+        text-decoration: none;
+        text-align: center;
+        width: 1.2rem;
+        height: 1.2rem;
+        line-height: 1.2rem;
       }
     </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="buttons">
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+    </div>
 
     <script type="module">
-      import init from "./pkg/gameoflife.js";
+      import init, {
+        getState,
+        getNextState,
+        toggleState,
+      } from "./pkg/game_of_life_wasm.js";
 
       async function main() {
         await init();
+
+        render();
+      }
+
+      let game_interval;
+      let isRunning = false;
+      let start_button = document.getElementById("start");
+      start_button.addEventListener("click", () => {
+        // call the interval
+        isRunning = true;
+
+        clearInterval(game_interval);
+        game_interval = setInterval(() => {
+          getNextState();
+          render();
+        }, 1000);
+      });
+
+      let stop_button = document.getElementById("stop");
+      stop_button.addEventListener("click", () => {
+        isRunning = false;
+        clearInterval(game_interval);
+        render();
+      });
+
+      function render() {
+        let root = document.getElementById("root");
+        root.innerHTML = "";
+        let data = getState()
+          .split("\n")
+          .map((row) => row.trim().split(/\s+/));
+        data.pop();
+        root.style.display = "inline-grid";
+        root.style.gridTemplate = `repeat(${data.length}, auto) / repeat(${data[0].length}, auto)`;
+
+        for (let y = 0; y < data.length; y++) {
+          for (let x = 0; x < data[y].length; x++) {
+            let element = document.createElement("a");
+            element.classList.add("field");
+            element.href = "#";
+            element.innerText = data[y][x];
+            element.addEventListener("contextmenu", (evt) => {
+              evt.preventDefault();
+              if (!isRunning) {
+                toggleState(x, y);
+                render();
+              }
+            });
+
+            root.appendChild(element);
+          }
+        }
       }
 
       main();
