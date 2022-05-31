@@ -20,7 +20,7 @@ impl GameOfLife {
                 let mut rng = rand::thread_rng();
                 for y in 0..height {
                     for x in 0..width {
-                        if rng.gen_range(0..=100) < percentage {
+                        if rng.gen_range(0..=100) <= percentage {
                             alive_fields.insert((x, y));
                         }
                     }
@@ -81,7 +81,12 @@ mod tests {
         let game_of_life = GameOfLife::new(10, 10, 10);
         println!("{:?}", game_of_life);
     }
-
+    
+    #[test]
+    fn debug() {
+        let game_of_life = GameOfLife::new(10, 10, 100);
+        println!("{:?}", game_of_life.alive_fields.len());
+    }
     #[test]
     fn test_neighbor_count_full_field() {
         let game_of_life = GameOfLife::new(10, 10, 100);
@@ -91,10 +96,21 @@ mod tests {
             (9, 0),
             (9, 9)
         ];
-        
-        for &pos in &corners_pos {
-            assert_eq!(game_of_life.get_alive_neighbor_count(pos), 3);
+
+        for y in 0..9 {
+            for x in 0..9 {
+                let pos = (x, y);
+                if corners_pos.contains(&pos) {
+                    assert_eq!(game_of_life.get_alive_neighbor_count(pos), 3);
+                } else {
+
+                    if x == 0 || y == 0 {
+                        assert_eq!(game_of_life.get_alive_neighbor_count(pos), 5);
+                    } else {
+                        assert_eq!(game_of_life.get_alive_neighbor_count(pos), 8);
+                    }
+                }
+            }
         }
-        assert_eq!(game_of_life.get_alive_neighbor_count((5, 5)), 8);
     }
 }
