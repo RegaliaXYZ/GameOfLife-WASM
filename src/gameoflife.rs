@@ -44,6 +44,32 @@ impl GameOfLife {
             .filter(|pos| self.alive_fields.contains(pos))
             .count() as u8
     }
+
+    pub fn tick(&mut self) {
+        let mut new_alive_fields: HashSet<Position> = HashSet::new();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let position = (x, y);
+                let alive_neighbor_count = self.get_alive_neighbor_count(position);
+                // RULES OF GAME OF LIFE 
+                // 1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+                // 2. Any live cell with two or three live neighbours lives on to the next generation.
+                // 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
+                // 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+ 
+                if self.alive_fields.contains(&position) {
+                    if alive_neighbor_count == 2 || alive_neighbor_count == 3 {
+                        new_alive_fields.insert(position);
+                    }
+                } else {
+                    if alive_neighbor_count == 3 {
+                        new_alive_fields.insert(position);
+                    }
+                }
+            }
+        }
+        self.alive_fields = new_alive_fields;
+    }
 }
 
 #[cfg(test)]
