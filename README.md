@@ -15,6 +15,6 @@ You will need to:
 
 # Possible Improvements
 
-- Expose the parameters (width & height & fill percentage) and
+- [x] Expose the parameters (width & height & fill percentage)
 - [x] implement a START/STOP mechanism instead of ticking indefinitely
 - [x] Add a way to "place" your own alive cells

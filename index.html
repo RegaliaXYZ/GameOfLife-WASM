@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       html {
-        font-size: 200%;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
@@ -20,8 +19,29 @@
       }
     </style>
   </head>
-  <body>
+  <body style="text-align: center">
     <div id="root"></div>
+    <form id="parameters" style="border: thick double #32a1ce">
+      <div>
+        <label for="width">Width:</label>
+        <input id="width" type="number" min="1" max="50" value="15" />
+      </div>
+      <div>
+        <label for="height">Height:</label>
+        <input id="height" type="number" min="1" max="50" value="15" />
+      </div>
+      <div>
+        <label for="percentage">Percentage:</label>
+        <input id="percentage" type="number" min="1" max="100" value="50" />
+      </div>
+      <div>
+        <button id="create">Create new board with parameters</button>
+        <p>
+          You can also right click to toggle a specific cell state when the
+          automata isn't running!
+        </p>
+      </div>
+    </form>
     <div id="buttons">
       <button id="start">Start</button>
       <button id="stop">Stop</button>
@@ -32,6 +52,7 @@
         getState,
         getNextState,
         toggleState,
+        newGame,
       } from "./pkg/game_of_life_wasm.js";
 
       async function main() {
@@ -39,11 +60,30 @@
 
         render();
       }
+      let new_game_button = document.getElementById("create");
+      new_game_button.addEventListener("click", (evt) => {
+        evt.preventDefault();
+        let new_width = document.getElementById("width").value;
+        let new_height = document.getElementById("height").value;
+        let new_percentage = document.getElementById("percentage").value;
+        console.log(
+          "New parameters applied: width: " +
+            new_width +
+            ", height: " +
+            new_height +
+            ", percentage: " +
+            new_percentage
+        );
+        newGame(new_width, new_height, new_percentage);
+        render();
+      });
 
       let game_interval;
       let isRunning = false;
       let start_button = document.getElementById("start");
-      start_button.addEventListener("click", () => {
+      start_button.addEventListener("click", (evt) => {
+        console.log("Starting the automata...");
+        evt.preventDefault();
         // call the interval
         isRunning = true;
 
@@ -55,7 +95,9 @@
       });
 
       let stop_button = document.getElementById("stop");
-      stop_button.addEventListener("click", () => {
+      stop_button.addEventListener("click", (evt) => {
+        console.log("Stopping the automata...");
+        evt.preventDefault();
         isRunning = false;
         clearInterval(game_interval);
         render();
@@ -80,6 +122,7 @@
             element.addEventListener("contextmenu", (evt) => {
               evt.preventDefault();
               if (!isRunning) {
+                console.log("Changing state at (" + x + ", " + y + ")");
                 toggleState(x, y);
                 render();
               }

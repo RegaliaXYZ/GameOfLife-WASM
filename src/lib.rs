@@ -11,6 +11,13 @@ thread_local! {
 
 }
 
+#[wasm_bindgen(js_name=newGame)]
+pub fn create_new_game(width: usize, height: usize, percentage: usize) {
+  GAME.with(|game| {
+    *game.borrow_mut() = GameOfLife::new(width, height, percentage);
+  });
+}
+
 #[wasm_bindgen(js_name=getState)]
 pub fn get_state() -> String {
   GAME.with(|ms| ms.borrow().to_string())
