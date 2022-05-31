@@ -29,6 +29,21 @@ impl GameOfLife {
             }
         }
     }
+
+    pub fn get_neighbor_iterator(&self, (x, y): Position) -> impl Iterator<Item =Position> {
+        let width: usize = self.width;
+        let height: usize = self.height;
+        (x.max(1) - 1..=(x + 1).min(width - 1)).flat_map(move |i| {
+            (y.max(1) - 1..=(y + 1).min(height - 1)).map(move |j| (i, j))
+        }).filter(move |&pos| pos != (x, y))
+    }
+
+    pub fn get_alive_neighbor_count(&self, pos: Position) -> u8 {
+        self
+            .get_neighbor_iterator(pos)
+            .filter(|pos| self.alive_fields.contains(pos))
+            .count() as u8
+    }
 }
 
 #[cfg(test)]
@@ -39,5 +54,21 @@ mod tests {
     fn test_display() {
         let game_of_life = GameOfLife::new(10, 10, 10);
         println!("{:?}", game_of_life);
+    }
+
+    #[test]
+    fn test_neighbor_count_full_field() {
+        let game_of_life = GameOfLife::new(10, 10, 100);
+        let corners_pos = [
+            (0, 0),
+            (0, 9),
+            (9, 0),
+            (9, 9)
+        ];
+        
+        for &pos in &corners_pos {
+            assert_eq!(game_of_life.get_alive_neighbor_count(pos), 3);
+        }
+        assert_eq!(game_of_life.get_alive_neighbor_count((5, 5)), 8);
     }
 }
