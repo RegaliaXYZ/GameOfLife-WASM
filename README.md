@@ -4,6 +4,8 @@ This project was done as an introduction to Rust & WebAssembly (WASM). It is hea
 
 The GameOfLife is a struct that contains only the width, height and alive_cells. It implements the constructor and a tick function that serves as next-state generator based on the rules
 
+It is currently deployed on [wasm-game-of-life](game-of-life-webassembly.vercel.app)
+
 # How to use
 
 You will need to:
